@@ -1,89 +1,196 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
+  <v-container>
+    <h2>Beauty clinic</h2>
+    <v-container class="m">
+      <v-form ref="form">
+        <v-row>
+          <v-col
+            cols="12"
+            md="6"
           >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
+            <v-text-field
+              v-model="firstName"
+              :rules="[v => !!v || 'First Name is required']"
+              label="First Name"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="6"
           >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
+            <v-text-field
+              v-model="lastName"
+              :rules="[v => !!v || 'List name is required']"
+              label="List name"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-text-field
+              v-model="age"
+              :rules="[v => !!v || 'Age is required']"
+              label="Age"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-text-field
+              v-model="height"
+              :rules="[v => !!v || 'Height is required']"
+              label="Height"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-text-field
+              v-model="weight"
+              :rules="[v => !!v || 'Weight is required']"
+              label="Weight"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-text-field
+              v-model="phone"
+              :rules="[v => !!v || 'Phone is required']"
+              label="Phone number"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-text-field
+              ref="email"
+              v-model="email"
+              label="E-mail"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-select
+              v-model="type"
+              :rules="[v => !!v || 'Type is required']"
+              :items="this.$store.state.types"
+              label="Type"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-select
+              v-model="sex"
+              :rules="[v => !!v || 'Sex is required']"
+              :items="this.$store.state.sex"
+              label="Sex"
+              required
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="12"
+          >
+            <v-textarea
+              ref="other"
+              v-model="other"
+              label="Other"
+              required
+            />
+          </v-col>
           <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
+            class="mr-4"
+            @click="addData"
           >
-            Continue
+            submit
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+          <v-btn
+            class="mr-4"
+            @click="reset"
+          >
+            Reset
+          </v-btn>
+        </v-row>
+      </v-form>
+    </v-container>
+  </v-container>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
-
+import firebase from 'firebase/app'
+import { db } from '~/plugins/firebaseConfig.js'
 export default {
-  components: {
-    Logo,
-    VuetifyLogo
+  data () {
+    return {
+      firstName: null,
+      lastName: null,
+      age: null,
+      height: null,
+      weight: null,
+      phone: null,
+      email: '',
+      type: null,
+      sex: null,
+      other: ''
+    }
+  },
+  methods: {
+    clear () {
+      this.$refs.form.reset()
+      this.email = ''
+      this.other = ''
+    },
+    addData () {
+      const dataText = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        age: this.age,
+        height: this.height,
+        weight: this.weight,
+        phone: this.phone,
+        email: this.email,
+        type: this.type,
+        sex: this.sex,
+        other: this.other,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }
+      if (this.firstName != null && this.lastName != null &&
+      this.age != null && this.height != null &&
+      this.weight != null && this.phone != null &&
+      this.type != null && this.sex != null) {
+        db.collection('dataTable').doc().set(dataText)
+          .then(function () {
+            // eslint-disable-next-line no-console
+            console.log('Document successfully written! -> dataTable')
+          })
+          .catch(function (error) {
+            // eslint-disable-next-line no-console
+            console.error('Error writing document: ', error)
+          })
+        this.clear()
+      } this.$refs.form.validate()
+    },
+    reset () {
+      this.clear()
+    }
   }
 }
 </script>
